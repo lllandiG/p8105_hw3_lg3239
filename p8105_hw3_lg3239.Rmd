@@ -99,4 +99,25 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
+## Problem 2
+
+```{r}
+acc_data = 
+  read_csv("hw3_files/accel_data.csv") %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    starts_with("activity"),
+    names_to = "minute_midnight",
+    names_prefix = "activity_",
+    values_to = "activity_count"
+  ) %>%
+  mutate(minute_midnight = as.integer(minute_midnight)) %>%
+  mutate(weekday_vs_weekend = if_else(day %in% c("Saturday", "Sunday"), "weekend", "weekday"
+  ))
+view(acc_data)
+```
+
+```{r}
+
+```
 
