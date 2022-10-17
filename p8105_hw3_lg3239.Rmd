@@ -201,11 +201,37 @@ ny_noaa_tidy %>%
   geom_line(alpha = 0.5) +
   facet_grid(.~month) +
   labs(x = "Year",
-       y = "Average maximum temperature (°C)") +
+       y = "Average maximum temperature (°C)",
+       title = "Average max temperature in January and July for each station") +
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
   
 ```
 
+
+
+```{r}
+plot_i = 
+  ny_noaa_tidy %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex() +
+  theme(legend.position = "right") +
+  labs(x = "Minimum temperature (°C)",
+       y = "Maximum temperature (°C)",
+       title = "Max vs. min temperature for all observations") +
+  theme(plot.title = element_text(size = 12))
+
+plot_ii = 
+  ny_noaa_tidy %>%
+  filter(snow > 0 & snow < 100) %>%
+  ggplot(aes(x = snow, y = year, group = year)) +
+  geom_density_ridges(scale = 0.85) +
+  labs(x = "Snowfall (mm)",
+       y = "Year",
+       title = "Distribution of snowfall (0 ~ 100mm) across years") +
+  theme(plot.title = element_text(size = 12))
+  
+plot_i + plot_ii
+```
 
 
 
