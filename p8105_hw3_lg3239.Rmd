@@ -101,23 +101,49 @@ instacart %>%
 
 ## Problem 2
 
+The column names corresponding to each activity measurement are transformed to one variable `minute`, representing each minute of a 24-hour day starting at midnight. The values are transformed to `activity_measure`, representing the counts for each minute above. The type of `minute` is in numeric. An additional variable `weekday_vs_weekend` is added, specifying whether each measurement is on weekday or on weekend.
+
 ```{r}
 acc_data = 
   read_csv("hw3_files/accel_data.csv") %>%
   janitor::clean_names() %>%
   pivot_longer(
     starts_with("activity"),
-    names_to = "minute_midnight",
+    names_to = "minute",
     names_prefix = "activity_",
-    values_to = "activity_count"
+    values_to = "activity_measure"
   ) %>%
-  mutate(minute_midnight = as.integer(minute_midnight)) %>%
+  mutate(minute = as.integer(minute)) %>%
   mutate(weekday_vs_weekend = if_else(day %in% c("Saturday", "Sunday"), "weekend", "weekday"
-  ))
+  )) %>%
+  mutate(day = factor(day, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
 view(acc_data)
 ```
 
-```{r}
+This dataset contains `r nrow(acc_data)` rows and `r ncol(acc_data)` columns, with each row representing the observation of accelerometer data collected within one minute time frame. Variables include number of the week, number of the day, the day of the week, minute since midnight, accelerometer data, and whether on weekday or weekend. These correspond to `r names(acc_data)`. 
 
+This table shows the total activity measurements for each day of the week. This table is intentionally in untidied format for readers. The days with maximum measurement are on the weekends for the first two weeks. The activity measurements are relatively high during the weekdays for the following three weeks.
+
+```{r}
+acc_data %>%
+  group_by(week, day) %>%
+  summarise(total_activity = sum(activity_measure)) %>%
+  pivot_wider(
+    names_from = "week",
+    values_from = "total_activity"
+  ) %>%
+  knitr::kable(digits = 2)
+```
+
+
+```{r}
+acc_data %>%
+  ggplot(aes(x = minute, y = activity_measure)) +
+  geom_point(aes(color = day), alpha = .5) +
+  labs(
+    title = "24-hour activity time courses for each day",
+    x = "Minute in a day",
+    y = "Activity counts"
+  ) 
 ```
 
