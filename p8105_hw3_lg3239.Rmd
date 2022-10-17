@@ -160,18 +160,52 @@ skimr::skim(ny_noaa)
 summary(ny_noaa)
 ```
 
-This dataset contains `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns, with each row representing an observation on snow and weather conditions at certain weather station. Variables include `r names(ny_noaa)`, in which `prcp` is the precipitation in tenths of mm, `snow` is snowfall(mm), `snwd` is snow depth(mm), and `tmax` `tmin` are temperatures in tenths of degrees Celsius. Each weather station may collect only a subset of these variables, resulting in extensive missing values in variables except `id` and `date`. Almost half of the `tmax` and `tmin` columns are missing, which could become a problem when analyzing data on these variables. There is no sufficient evidence that these missing values could be removed.
+This dataset contains `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns, with each row representing an observation on snow and weather conditions at certain weather station. Variables include `r names(ny_noaa)`, in which `prcp` is the precipitation in tenths of mm, `snow` is snowfall(mm), `snwd` is snow depth(mm), and `tmax` `tmin` are temperatures in tenths of degrees Celsius. The range of year is from 1981 to 2010. \
+Each weather station may collect only a subset of these variables, resulting in extensive missing values in variables except `id` and `date`. Almost half of the `tmax` and `tmin` columns are missing, which could become a problem when analyzing data on these variables. There is no sufficient evidence that these missing values could be removed.\
+
+For data cleaning, variables with units that are in tenths are converted to standard scale by dividing by 10. `month` variable is converted into month names, `day` and `year` are in numeric types.
 
 ```{r}
 ny_noaa_tidy = 
   ny_noaa %>%
-  mutate(tmax = as.numeric(tmax)) %>%
-  mutate(tmin = as.numeric(tmin)) %>%
+  mutate(tmax = as.numeric(tmax)/10) %>%
+  mutate(tmin = as.numeric(tmin)/10) %>%
+  mutate(prcp = prcp/10) %>%
   separate(date, into = c("year", "month", "day"), sep = "-") %>%
-  mutate(month = gsub("0", "", month)) %>%
-  mutate(day = gsub("0", "", day))
+  mutate(month = month.name[as.numeric(month)]) %>%
+  mutate(day = as.numeric(day)) %>%
+  mutate(year = as.numeric(year))
 
 ```
+
+For snowfall, the most commonly observed value is `0` because there is no snow in most of the days in a year. Below is the code used to get the mode.
+
+```{r}
+# Create the function for mode
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+getmode(pull(ny_noaa_tidy, snow))
+```
+
+This plot shows the the average max temperature in January and in July in each station across years. Since there are too many weather stations, the distinctions between each station is not shown in the plot, and many of them overlap each other. The average max temperature in January ranges around -10 to 10 °C, with one obvious outlier in the early 80's. The average max temperature in July ranges around 20 to 33 °C, with an outlier below 15°C for a weather station in that specific year. 
+
+```{r}
+ny_noaa_tidy %>%
+  group_by(id, year, month) %>%
+  filter(month %in% c("January", "July")) %>%
+  summarise(tmax_mean = mean(tmax, na.rm = TRUE)) %>%
+  ggplot(aes(x = year, y = tmax_mean, group = id)) +
+  geom_line(alpha = 0.5) +
+  facet_grid(.~month) +
+  labs(x = "Year",
+       y = "Average maximum temperature (°C)") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  
+```
+
 
 
 
