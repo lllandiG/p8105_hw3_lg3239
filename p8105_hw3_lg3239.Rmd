@@ -43,9 +43,6 @@ instacart =
   as_tibble(instacart)
 ```
 
-```{r}
-head(instacart)
-```
 ### Data Exploration
 
 This dataset contains `r nrow(instacart)` rows and `r ncol(instacart)` columns, with each row resprenting a single product from an instacart order. Variables include identifiers for user, order, and product; the order in which each product was added to the cart. There are several order-level variables, describing the day and time of the order, and number of days since prior order. Then there are several item-specific variables, describing the product name (e.g. Yogurt, Avocado), department (e.g. dairy and eggs, produce), and aisle (e.g. yogurt, fresh fruits), and whether the item has been ordered by this user in the past. In total, there are `r instacart %>% select(product_id) %>% distinct %>% count` products found in `r instacart %>% select(user_id, order_id) %>% distinct %>% count` orders from `r instacart %>% select(user_id) %>% distinct %>% count` distinct users.
@@ -101,6 +98,7 @@ instacart %>%
 
 ## Problem 2
 
+### 1
 The column names corresponding to each activity measurement are transformed to one variable `minute`, representing each minute of a 24-hour day starting at midnight. The values are transformed to `activity_measure`, representing the counts for each minute above. The type of `minute` is in numeric. An additional variable `weekday_vs_weekend` is added, specifying whether each measurement is on weekday or on weekend.
 
 ```{r}
@@ -117,10 +115,11 @@ acc_data =
   mutate(weekday_vs_weekend = if_else(day %in% c("Saturday", "Sunday"), "weekend", "weekday"
   )) %>%
   mutate(day = factor(day, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
-view(acc_data)
 ```
 
 This dataset contains `r nrow(acc_data)` rows and `r ncol(acc_data)` columns, with each row representing the observation of accelerometer data collected within one minute time frame. Variables include number of the week, number of the day, the day of the week, minute since midnight, accelerometer data, and whether on weekday or weekend. These correspond to `r names(acc_data)`. 
+
+### 2
 
 This table shows the total activity measurements for each day of the week. This table is intentionally in untidied format for readers. The maximum activity measurement are on the weekends for the first two weeks. In contrast, the maximum activity measurements are on weekdays for the following three weeks. The two lowest (abnormal) measurements happens on Saturday on the last two weeks with the value of 1440. The activity measurements are slightly higher on weekdays than on weekends.
 
@@ -135,12 +134,14 @@ acc_data %>%
   knitr::kable(digits = 2)
 ```
 
+### 3
+
 This plot shows the 24-hour activity time courses for each day with different colors indicating day of the week. There are some obvious peaks for activity counts that are greater than 2500. The activity counts show remarkable increase or peaks approximately when in the morning around 8am, in the afternoon around 12pm, around 5pm, and in the evening around 9 pm. Most of the data are below 2500.
 
 ```{r}
 acc_data %>%
-  ggplot(aes(x = minute, y = activity_measure)) +
-  geom_point(aes(color = day), alpha = .5) +
+  ggplot(aes(x = minute, y = activity_measure, group = interaction(week, day))) +
+  geom_line(aes(color = day), alpha = .5) +
   labs(
     title = "24-hour activity time courses for each day",
     x = "Minute in a day",
@@ -152,16 +153,12 @@ acc_data %>%
 
 ```{r}
 data("ny_noaa")
-head(ny_noaa)
-```
-
-```{r}
-skimr::skim(ny_noaa)
-summary(ny_noaa)
 ```
 
 This dataset contains `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns, with each row representing an observation on snow and weather conditions at certain weather station. Variables include `r names(ny_noaa)`, in which `prcp` is the precipitation in tenths of mm, `snow` is snowfall(mm), `snwd` is snow depth(mm), and `tmax` `tmin` are temperatures in tenths of degrees Celsius. The range of year is from 1981 to 2010. \
 Each weather station may collect only a subset of these variables, resulting in extensive missing values in variables except `id` and `date`. Almost half of the `tmax` and `tmin` columns are missing, which could become a problem when analyzing data on these variables. There is no sufficient evidence that these missing values could be removed.\
+
+### 1
 
 For data cleaning, variables with units that are in tenths are converted to standard scale by dividing by 10. `month` variable is converted into month names, `day` and `year` are in numeric types.
 
@@ -190,6 +187,8 @@ getmode <- function(v) {
 getmode(pull(ny_noaa_tidy, snow))
 ```
 
+### 2
+
 This plot shows the the average max temperature in January and in July in each station across years. Since there are too many weather stations, the distinctions between each station is not shown in the plot, and many of them overlap each other. The average max temperature in January ranges around -10 to 10 °C, with one obvious outlier in the early 80's. The average max temperature in July ranges around 20 to 33 °C, with an outlier below 15°C for a weather station in that specific year. 
 
 ```{r}
@@ -207,7 +206,9 @@ ny_noaa_tidy %>%
   
 ```
 
+### 3
 
+This combined plot contains two plots: max vs. min temperature for all observations, and the distribution of snowfall values greater than 0 and less than 100 for each year.
 
 ```{r}
 plot_i = 
