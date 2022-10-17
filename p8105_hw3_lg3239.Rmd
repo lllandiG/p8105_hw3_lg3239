@@ -122,7 +122,7 @@ view(acc_data)
 
 This dataset contains `r nrow(acc_data)` rows and `r ncol(acc_data)` columns, with each row representing the observation of accelerometer data collected within one minute time frame. Variables include number of the week, number of the day, the day of the week, minute since midnight, accelerometer data, and whether on weekday or weekend. These correspond to `r names(acc_data)`. 
 
-This table shows the total activity measurements for each day of the week. This table is intentionally in untidied format for readers. The days with maximum measurement are on the weekends for the first two weeks. The activity measurements are relatively high during the weekdays for the following three weeks.
+This table shows the total activity measurements for each day of the week. This table is intentionally in untidied format for readers. The maximum activity measurement are on the weekends for the first two weeks. In contrast, the maximum activity measurements are on weekdays for the following three weeks. The two lowest (abnormal) measurements happens on Saturday on the last two weeks with the value of 1440. The activity measurements are slightly higher on weekdays than on weekends.
 
 ```{r}
 acc_data %>%
@@ -135,6 +135,7 @@ acc_data %>%
   knitr::kable(digits = 2)
 ```
 
+This plot shows the 24-hour activity time courses for each day with different colors indicating day of the week. There are some obvious peaks for activity counts that are greater than 2500. The activity counts show remarkable increase or peaks approximately when in the morning around 8am, in the afternoon around 12pm, around 5pm, and in the evening around 9 pm. Most of the data are below 2500.
 
 ```{r}
 acc_data %>%
