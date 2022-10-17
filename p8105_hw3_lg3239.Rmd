@@ -148,3 +148,30 @@ acc_data %>%
   ) 
 ```
 
+## Problem 3
+
+```{r}
+data("ny_noaa")
+head(ny_noaa)
+```
+
+```{r}
+skimr::skim(ny_noaa)
+summary(ny_noaa)
+```
+
+This dataset contains `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns, with each row representing an observation on snow and weather conditions at certain weather station. Variables include `r names(ny_noaa)`, in which `prcp` is the precipitation in tenths of mm, `snow` is snowfall(mm), `snwd` is snow depth(mm), and `tmax` `tmin` are temperatures in tenths of degrees Celsius. Each weather station may collect only a subset of these variables, resulting in extensive missing values in variables except `id` and `date`. Almost half of the `tmax` and `tmin` columns are missing, which could become a problem when analyzing data on these variables. There is no sufficient evidence that these missing values could be removed.
+
+```{r}
+ny_noaa_tidy = 
+  ny_noaa %>%
+  mutate(tmax = as.numeric(tmax)) %>%
+  mutate(tmin = as.numeric(tmin)) %>%
+  separate(date, into = c("year", "month", "day"), sep = "-") %>%
+  mutate(month = gsub("0", "", month)) %>%
+  mutate(day = gsub("0", "", day))
+
+```
+
+
+
