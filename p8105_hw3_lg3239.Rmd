@@ -189,7 +189,7 @@ getmode(pull(ny_noaa_tidy, snow))
 
 ### 2
 
-This plot shows the the average max temperature in January and in July in each station across years. Since there are too many weather stations, the distinctions between each station is not shown in the plot, and many of them overlap each other. The average max temperature in January ranges around -10 to 10 °C, with one obvious outlier in the early 80's. The average max temperature in July ranges around 20 to 33 °C, with an outlier below 15°C for a weather station in that specific year. 
+This plot shows the the average max temperature in January and in July in each station across years. Since there are too many weather stations, the distinctions between each station is not shown in the plot, and many of them overlap each other. The average max temperature in January ranges around -10 to 10 °C, with one obvious outlier in the early 80's. The average max temperature in July ranges around 20 to 33 °C, with an outlier below 15°C for a weather station in the late 80's. 
 
 ```{r}
 ny_noaa_tidy %>%
@@ -208,7 +208,7 @@ ny_noaa_tidy %>%
 
 ### 3
 
-This combined plot contains two plots: max vs. min temperature for all observations, and the distribution of snowfall values greater than 0 and less than 100 for each year.
+This combined plot contains two plots: max vs. min temperature for all observations, and the distribution of snowfall values greater than 0 and less than 100 for each year. `geom_hex()` is used to generate the first plot. `geom_density_ridges()` is used to generate the second plot.
 
 ```{r}
 plot_i = 
@@ -228,7 +228,7 @@ plot_ii =
   geom_density_ridges(scale = 0.85) +
   labs(x = "Snowfall (mm)",
        y = "Year",
-       title = "Distribution of snowfall (0 ~ 100mm) across years") +
+       title = "Distribution of snowfall") +
   theme(plot.title = element_text(size = 12))
   
 plot_i + plot_ii
