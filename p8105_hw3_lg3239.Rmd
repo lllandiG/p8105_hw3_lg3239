@@ -210,16 +210,17 @@ ny_noaa_tidy %>%
 
 This combined plot contains two plots: max vs. min temperature for all observations, and the distribution of snowfall values greater than 0 and less than 100 for each year. `geom_hex()` is used to generate the first plot. `geom_density_ridges()` is used to generate the second plot.
 
-```{r, fig.width=10, fig.height=6}
+```{r}
 plot_i = 
   ny_noaa_tidy %>%
   ggplot(aes(x = tmin, y = tmax)) +
   geom_hex() +
-  theme(legend.position = "right") +
   labs(x = "Minimum temperature (°C)",
        y = "Maximum temperature (°C)",
        title = "Max vs. min temperature for all observations") +
-  theme(plot.title = element_text(size = 12))
+  theme(plot.title = element_text(size = 12)) +
+  theme(legend.key.width = unit(1, 'cm')) +
+  theme(legend.text = element_text(angle = 60, hjust = 1))
 
 plot_ii = 
   ny_noaa_tidy %>%
